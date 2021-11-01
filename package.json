@@ -1,0 +1,25 @@
+{
+  "name": "pulgnazak",
+  "version": "1.0.0",
+  "description": "Trabalho para decriptar certificados e tal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "Matheus Wandscheer",
+  "license": "ISC",
+  "packageManager": "yarn@3.1.0",
+  "dependencies": {
+    "asn1js": "^2.1.1",
+    "axios": "^0.24.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "moment": "^2.29.1",
+    "node-fetch": "^3.0.0",
+    "node-forge": "^0.10.0",
+    "nodemon": "^2.0.14",
+    "pkijs": "^2.2.1",
+    "pvutils": "^1.0.17"
+  }
+}

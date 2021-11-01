@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "bfdf8553-9a37-4caf-ae5c-1e2eb1d2eaf7",
+		"name": "Pulgnazak Certificados",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Enviar Confiavel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "cert",
+							"type": "file",
+							"src": "/C:/Users/Matheus Wandscheer/Desktop/pai node.cer"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/send-trusty",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"send-trusty"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verificar",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "cert",
+							"type": "file",
+							"src": "/C:/Users/Matheus Wandscheer/Desktop/node vo.cer"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/verify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Limpar memoria",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "cert",
+							"type": "file",
+							"src": "/C:/Users/Matheus Wandscheer/Desktop/node vo.cer"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/clear",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"clear"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
