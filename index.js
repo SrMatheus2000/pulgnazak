@@ -195,4 +195,4 @@ app.use((req, res) => {
 /**
  * Ligar o server
  */
-app.listen(8080, () => console.log(`Running ( port: 8080 )`));
+app.listen(process.env.PORT || 8080, () => console.log(`Running ( port: ${process.env.PORT || '8080'} )`));
