@@ -125,6 +125,11 @@ const caStore = pki.createCaStore();
 const app = express();
 
 /**
+ * Ter acesso aos arquivos do front
+ */
+app.use(express.static(path.join(__dirname, 'front', 'build')));
+
+/**
  * Endpoint para retornar o front-end
  */
 app.get('/*', (_req, res) => {
