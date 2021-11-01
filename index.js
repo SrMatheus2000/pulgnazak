@@ -128,7 +128,7 @@ const app = express();
  * Endpoint para retornar o front-end
  */
 app.get('/*', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'front', 'build', 'index.html'));
 });
 
 /**
