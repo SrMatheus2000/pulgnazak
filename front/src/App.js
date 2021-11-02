@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Container, CssBaseline, IconButton, Paper, Snackbar, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, CardHeader, Container, CssBaseline, IconButton, Paper, Snackbar, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { MdDelete, MdSend } from 'react-icons/md';
 import FilePreparer from './FilePreparer'
@@ -62,8 +62,21 @@ function App() {
   }
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="sm" sx={{ my: 3 }}>
       <CssBaseline />
+
+      <Card>
+        <CardHeader title="Trabalho Acadêmico" />
+        <CardContent>
+          <Typography><Box sx={{ fontWeight: "bold", display: "inline" }}>Disciplina:</Box> Segurança em Comércio Eletrônico</Typography>
+          <Typography><Box sx={{ fontWeight: "bold", display: "inline" }}>Semestre:</Box> 2021/2</Typography>
+          <Typography><Box sx={{ fontWeight: "bold", display: "inline" }}>Curso:</Box> Segurança da Informação</Typography>
+          <Typography><Box sx={{ fontWeight: "bold", display: "inline" }}>Instituição:</Box> Universidade do Vale do Rio dos Sinos</Typography>
+          <Typography sx={{ fontWeight: "bold" }}>Desenvolvedores:</Typography>
+          <Typography sx={{ ml: 4 }}>Matheus Wandscheer</Typography>
+          <Typography sx={{ ml: 4 }}>Arthur Oliveira</Typography>
+        </CardContent>
+      </Card>
 
       <Snackbar open={!!message} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
