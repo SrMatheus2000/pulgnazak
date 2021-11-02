@@ -17,7 +17,7 @@ function App() {
     const reqs = confiaveis.map(cert => {
       const data = new FormData()
       data.append("cert", cert)
-      return axios.post("http://localhost/send-trusty", data)
+      return axios.post("https://pure-chamber-38883.herokuapp.com/send-trusty", data)
     })
     try {
       const res = await Promise.all(reqs)
@@ -41,7 +41,7 @@ function App() {
       const data = new FormData()
       data.append("cert", testando)
 
-      const res = await axios.post("http://localhost/verify", data)
+      const res = await axios.post("https://pure-chamber-38883.herokuapp.com/verify", data)
       setSeverity("success")
       setMessage(res.data.message || res.data)
     } catch (error) {
@@ -52,7 +52,7 @@ function App() {
 
   const limparMemoria = async () => {
     try {
-      const res = await axios.delete("http://localhost/clear")
+      const res = await axios.delete("https://pure-chamber-38883.herokuapp.com/clear")
       setSeverity("success")
       setMessage(res.data.message || res.data)
     } catch (error) {
