@@ -148,7 +148,7 @@ app.use(fileUpload());
 app.post('/send-trusty', async (req, res) => {
 
   if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('Tem que ter algo');
+    return res.status(500).send('Tem que ter algo');
   }
 
   caStore.addCertificate(await getRootCertificate(certFromFile(req.files.cert.data)))
@@ -160,22 +160,26 @@ app.post('/send-trusty', async (req, res) => {
  * Endpoint para verificar se um certificado é confiavel
  */
 app.post('/verify', async (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(500).send('Tem que ter algo');
+  }
+
   const cert = certFromFile(req.files.cert.data)
   try {
     const now = moment()
     const { notBefore, notAfter } = cert.validity
-    if (now.isBefore(notBefore)) return res.send("Certificado ainda não está valendo")
-    if (now.isAfter(notAfter)) return res.send("Certificado expirado")
+    if (now.isBefore(notBefore)) return res.status(500).send("Certificado ainda não está valendo")
+    if (now.isAfter(notAfter)) return res.status(500).send("Certificado expirado")
 
     const chain = await createChain(cert)
 
     const revoked = await checkCRL(chain, cert)
-    if (revoked) return res.send("Certificado Revogado")
+    if (revoked) return res.status(500).send("Certificado Revogado")
 
     const ret = pki.verifyCertificateChain(caStore, chain);
-    return res.send(ret ? "Certificado Confiável" : "Certificado não confiável")
+    return res.status(ret ? 200 : 500).send(ret ? "Certificado Confiável" : "Certificado não confiável")
   } catch (error) {
-    res.send(error?.message || error)
+    res.status(500).send(error?.message || error)
   }
 })
 

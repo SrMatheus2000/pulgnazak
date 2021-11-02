@@ -176,7 +176,7 @@ const FilePreparer = ({
 
   return (
     <div className={clsx(classes.root, { [classes.loading]: loading })} {...props}>
-      <input ref={inputRef} type='file' {...{ multiple }} onChange={e => e?.target?.files?.length && preparaArquivo(e.target.files)} style={{ display: 'none' }} {...fileInputProps} />
+      <input ref={inputRef} type='file' {...{ multiple }} onChange={e => e?.target?.files?.length && preparaArquivo(e.target.files)} style={{ display: 'none' }} accept='application/x-x509-ca-cert,application/x-x509-user-cert' {...fileInputProps} />
       <TextField
         ref={setAnchorEl}
         variant='outlined'

@@ -1,4 +1,4 @@
-import { Box, Button, Container, CssBaseline, IconButton, Paper, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, CssBaseline, IconButton, Paper, Snackbar, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { MdDelete, MdSend } from 'react-icons/md';
 import FilePreparer from './FilePreparer'
@@ -6,33 +6,71 @@ import axios from "axios"
 
 function App() {
 
+  const [severity, setSeverity] = useState("success")
+  const [message, setMessage] = useState("")
+
+  const handleClose = () => setMessage("")
+
   const [confiaveis, setConfiaveis] = useState([])
 
   const enviarConfiaveis = async () => {
     const reqs = confiaveis.map(cert => {
       const data = new FormData()
       data.append("cert", cert)
-
       return axios.post("http://localhost/send-trusty", data)
     })
     try {
       const res = await Promise.all(reqs)
-
-      console.log(res);
+      if (res.some(({ status }) => status !== 200)) {
+        setSeverity("error")
+        setMessage("Erro ao enviar certificados confiaveis");
+        return
+      }
+      setSeverity("success")
+      setMessage("Certificados cadastrados")
     } catch (error) {
-      console.log(error);
+      setSeverity("error")
+      setMessage(error.response?.data?.message || error.response?.data || error.message || error)
     }
   }
 
   const [testando, setTestando] = useState()
 
   const checarConfiavel = async () => {
-    console.log(testando);
+    try {
+      const data = new FormData()
+      data.append("cert", testando)
+
+      const res = await axios.post("http://localhost/verify", data)
+      setSeverity("success")
+      setMessage(res.data.message || res.data)
+    } catch (error) {
+      setSeverity("error")
+      setMessage(error.response?.data?.message || error.response?.data || error.message || error)
+    }
+  }
+
+  const limparMemoria = async () => {
+    try {
+      const res = await axios.delete("http://localhost/clear")
+      setSeverity("success")
+      setMessage(res.data.message || res.data)
+    } catch (error) {
+      setSeverity("error")
+      setMessage(error.response?.data?.message || error.response?.data || error.message || error)
+    }
   }
 
   return (
     <Container component="main" maxWidth="sm">
       <CssBaseline />
+
+      <Snackbar open={!!message} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
+
       <Paper
         elevation={3}
         sx={{
@@ -89,13 +127,13 @@ function App() {
         <Typography variant='h6' sx={{ mb: 2 }}>Limpar Certificados Confiáveis</Typography>
         <Box sx={{ width: '100%', display: 'flex', gap: 2, justifyContent: "center", alignItems: 'center', maxWidth: "100%" }}>
           <Tooltip arrow title='Limpar'>
-            <Button variant='contained' endIcon={<MdDelete />}>
+            <Button onClick={limparMemoria} variant='contained' endIcon={<MdDelete />}>
               Limpar
             </Button>
           </Tooltip>
         </Box>
       </Paper>
-    </Container >
+    </Container>
   );
 }
 
