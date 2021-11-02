@@ -8,6 +8,7 @@ const moment = require('moment')
 const asn1 = require('asn1js');
 const pkijs = require('pkijs');
 const pvutils = require('pvutils');
+const cors = require('cors')
 
 /**
  * Converte o binario para um certificado
@@ -123,7 +124,7 @@ const caStore = pki.createCaStore();
  * Instancia do servidor
  */
 const app = express();
-
+app.use(cors())
 /**
  * Ter acesso aos arquivos do front
  */
@@ -200,4 +201,4 @@ app.use((req, res) => {
 /**
  * Ligar o server
  */
-app.listen(process.env.PORT || 8080, () => console.log(`Running ( port: ${process.env.PORT || '8080'} )`));
+app.listen(process.env.PORT || 80, () => console.log(`Running ( port: ${process.env.PORT || '80'} )`));
