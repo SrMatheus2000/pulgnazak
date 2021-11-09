@@ -35,28 +35,6 @@ const getParentLink = (cert) => {
 }
 
 /**
- * Pega o certificado Root
- * 
- * @param {pki.Certificate} cert 
- * @returns 
- */
-const getRootCertificate = async (cert) => {
-  let result = cert
-
-  let link = getParentLink(cert)
-
-  while (link) {
-    const res = await axios({ url: link, method: 'GET', responseType: 'arraybuffer' })
-    const buff = Buffer.from(await res.data)
-    const newCert = certFromFile(buff)
-    result = newCert
-    link = getParentLink(newCert)
-  }
-
-  return result
-}
-
-/**
  * Constroi a cadeia de certificacao
  * 
  * @param {pki.Certificate} cert 
@@ -151,7 +129,9 @@ app.post('/send-trusty', async (req, res) => {
     return res.status(500).send('Tem que ter algo');
   }
 
-  caStore.addCertificate(await getRootCertificate(certFromFile(req.files.cert.data)))
+  const chain = await createChain(certFromFile(req.files.cert.data))
+
+  chain.forEach(cert => caStore.addCertificate(cert))
 
   res.send("Certificado adicionado aos confiaveis")
 })
