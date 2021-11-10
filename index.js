@@ -56,6 +56,14 @@ const createChain = async (cert) => {
   return result
 }
 
+function asciiToHex(str = "") {
+  var arr1 = [];
+  for (var n = 0, l = str.length; n < l; n++) {
+    var hex = Number(str.charCodeAt(n)).toString(16);
+    arr1.push(hex);
+  }
+  return arr1.join('');
+}
 
 /**
  * Verifica se o certificado foi revogado em alguma das crls da cadeia
@@ -96,7 +104,7 @@ const checkCRL = async (chain, cert) => {
 /**
  * Local onde ficam armazenados os certificados
  */
-const caStore = pki.createCaStore();
+const caStore = new Set();
 
 /**
  * Instancia do servidor
@@ -131,7 +139,14 @@ app.post('/send-trusty', async (req, res) => {
 
   const chain = await createChain(certFromFile(req.files.cert.data))
 
-  chain.forEach(cert => caStore.addCertificate(cert))
+
+  chain.forEach(cert => {
+    caStore.add(cert.getExtension("subjectKeyIdentifier")?.subjectKeyIdentifier);
+    const auth = asciiToHex(cert.getExtension("authorityKeyIdentifier")?.value).substring(6)
+    if (auth) caStore.add(auth);
+  })
+
+  // chain.forEach(cert => caStore.addCertificate(cert))
 
   res.send("Certificado adicionado aos confiaveis")
 })
@@ -156,7 +171,15 @@ app.post('/verify', async (req, res) => {
     const revoked = await checkCRL(chain, cert)
     if (revoked) return res.status(500).send("Certificado Revogado")
 
-    const ret = pki.verifyCertificateChain(caStore, chain);
+    const ret = [...chain.reduce((add, curr) => {
+      add.add(curr.getExtension("subjectKeyIdentifier")?.subjectKeyIdentifier);
+
+      const auth = asciiToHex(curr.getExtension("authorityKeyIdentifier")?.value).substring(6)
+      if (auth) add.add(auth);
+
+      return add
+    }, new Set())].some(item => [...caStore].includes(item))
+
     return res.status(ret ? 200 : 500).send(ret ? "Certificado Confiável" : "Certificado não confiável")
   } catch (error) {
     res.status(500).send(error?.message || error)
@@ -168,9 +191,7 @@ app.post('/verify', async (req, res) => {
  */
 app.delete('/clear', async (_, res) => {
 
-  caStore.listAllCertificates().forEach(cert => {
-    caStore.removeCertificate(cert)
-  })
+  caStore.clear()
 
   res.send("Memoria limpa")
 })
