@@ -1,6 +1,6 @@
 const fileUpload = require('express-fileupload');
 const { X509Certificate } = require('crypto');
-const { pki } = require('node-forge')
+const { pki, util } = require('node-forge')
 const express = require('express');
 const axios = require('axios')
 const path = require('path')
@@ -57,12 +57,13 @@ const createChain = async (cert) => {
 }
 
 function asciiToHex(str = "") {
+  const a = str.replace("0\x16\x80\x14", "")
   var arr1 = [];
-  for (var n = 0, l = str.length; n < l; n++) {
-    var hex = Number(str.charCodeAt(n)).toString(16);
+  for (var n = 0, l = a.length; n < l; n++) {
+    var hex = Number(a.charCodeAt(n)).toString(16);
     arr1.push(hex);
   }
-  return arr1.join('');
+  return arr1.join('')//.slice(-40);
 }
 
 /**
@@ -141,8 +142,8 @@ app.post('/send-trusty', async (req, res) => {
 
 
   chain.forEach(cert => {
-    caStore.add(cert.getExtension("subjectKeyIdentifier")?.subjectKeyIdentifier);
-    const auth = asciiToHex(cert.getExtension("authorityKeyIdentifier")?.value).substring(6)
+    caStore.add(cert.getExtension("subjectKeyIdentifier")?.subjectKeyIdentifier?.replaceAll('0', ''));
+    const auth = util.bytesToHex(cert.getExtension("authorityKeyIdentifier")?.value).substring(8).replaceAll('0', '');
     if (auth) caStore.add(auth);
   })
 
@@ -172,9 +173,9 @@ app.post('/verify', async (req, res) => {
     if (revoked) return res.status(500).send("Certificado Revogado")
 
     const ret = [...chain.reduce((add, curr) => {
-      add.add(curr.getExtension("subjectKeyIdentifier")?.subjectKeyIdentifier);
+      add.add(curr.getExtension("subjectKeyIdentifier")?.subjectKeyIdentifier?.replaceAll('0', ''));
 
-      const auth = asciiToHex(curr.getExtension("authorityKeyIdentifier")?.value).substring(6)
+      const auth = util.bytesToHex(curr.getExtension("authorityKeyIdentifier")?.value).substring(8).replaceAll('0', '')
       if (auth) add.add(auth);
 
       return add
